@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marki.CSharp", "Marki.CShar
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Marki.Client", "Marki.Client\Marki.Client.fsproj", "{3A084CB1-EE63-4341-BF3F-7A4D78A3C954}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marki.Server", "Marki.Server\Marki.Server.csproj", "{9EFF133C-B406-4C14-A48F-74E29D7416A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{3A084CB1-EE63-4341-BF3F-7A4D78A3C954}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A084CB1-EE63-4341-BF3F-7A4D78A3C954}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A084CB1-EE63-4341-BF3F-7A4D78A3C954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EFF133C-B406-4C14-A48F-74E29D7416A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EFF133C-B406-4C14-A48F-74E29D7416A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EFF133C-B406-4C14-A48F-74E29D7416A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EFF133C-B406-4C14-A48F-74E29D7416A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

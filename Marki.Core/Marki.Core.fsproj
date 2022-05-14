@@ -6,11 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Markdown.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.30.2" />
+    <PackageReference Include="MongoDB.Bson" Version="2.15.1" />
   </ItemGroup>
 
 </Project>

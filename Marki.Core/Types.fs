@@ -1,6 +1,16 @@
 ﻿namespace Marki.Core
 
-open System.Runtime.Versioning
+open System
+open MongoDB.Bson
+open MongoDB.Bson.Serialization.Attributes
 
-[<RequireQualifiedAccess;UnsupportedOSPlatform("browser")>]
-module Database = ()
+type BlogPost =
+    { [<BsonId>]
+      _id: ObjectId
+      Title: string
+      Content: string
+      Tags: string[]
+      CreatedAt: DateTime }
+
+[<Struct>]
+type PaginatedResponse<'Item> = { Items: 'Item[]; Count: int64 }
