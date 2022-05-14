@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Marki Client",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build:client",
+            "program": "${workspaceFolder}/Marki.Client/bin/Debug/net6.0/Marki.Client.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Marki.Client",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": "Marki Client CSharp",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build:client:fsharp",
+            "program": "${workspaceFolder}/Marki.Client.CSharp/bin/Debug/net6.0/Marki.Client.CSharp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Marki.Client.CSharp",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        }
+    ]
+}
