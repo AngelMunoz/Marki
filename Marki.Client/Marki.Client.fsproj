@@ -13,9 +13,6 @@
     <PackageReference Include="Fun.Blazor.Server" Version="2.0.0-beta*" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="6.0.1" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Marki.Core\Marki.Core.fsproj" />
   </ItemGroup>
 
