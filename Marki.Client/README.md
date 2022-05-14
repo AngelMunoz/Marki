@@ -1,8 +1,8 @@
-This is a server side blazor app
+This is a blazor WASM mode app with Fun.Blazor
+
+wwwroot/index.html is the entry point for browser. it will load all the necessary files.
 
 App.fs contains UI logic
-
-Index.fs is for creating the index template. You can think it as index.html
 
 Startup.fs is for hooking up everything and configuring server
 
@@ -11,12 +11,8 @@ Startup.fs is for hooking up everything and configuring server
 
     Open terminal and run
     dotnet run
-
-    Open terminal and run
-    fun-blazor watch .\Marki.Client.fsproj
-
-    > This required 'dotnet tool install --global Fun.Blazor.Cli --version 2.0.0'
     
-## Dev without hot-reload
+    Open terminal and run
+    fun-blazor watch .\Marki.Client.fsproj 
 
-    dotnet watch run
+    > dotnet tool install --global Fun.Blazor.Cli --version 2.0.0

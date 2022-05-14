@@ -1,22 +1,19 @@
 ﻿#nowarn "0020"
 
 open System
-open Microsoft.AspNetCore.Builder
-open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.AspNetCore.Components.WebAssembly.Hosting
+open Fun.Blazor
+open Marki.Client
 
+let builder = WebAssemblyHostBuilder.CreateDefault(Environment.GetCommandLineArgs())
 
-let builder = WebApplication.CreateBuilder(Environment.GetCommandLineArgs())
+#if DEBUG
+builder.AddFunBlazor("#app", html.hotReloadComp(app, "Marki.Client.App.app"))
+#else
+builder.AddFunBlazor("#app", app)
+#endif
 
-builder.Services.AddControllersWithViews()
-builder.Services.AddServerSideBlazor().Services.AddFunBlazorServer()
+builder.Services.AddFunBlazorWasm()
 
-
-let app = builder.Build()
-
-app.UseStaticFiles()
-
-app.MapBlazorHub()
-app.MapFunBlazor(Marki.Client.Index.page)
-
-app.Run()
+builder.Build().RunAsync()
