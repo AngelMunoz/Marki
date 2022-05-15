@@ -7,16 +7,20 @@ module Marki.Client.App
 
 open FSharp.Data.Adaptive
 open Fun.Blazor
+open Fun.Blazor.Router
+open Marki.Client.Components
+open FsToolkit.ErrorHandling
+
+let router =
+    [ routeCi "/" (BlogEditor.BlogList())
+      routeCi "/blogs/new" (BlogEditor.NewBlog())
+      routeCif "/blogs/%s/edit" BlogEditor.EditBlog ]
 
 let app =
-    adaptiview () {
-        let! count, setCount = cval(1).WithSetter()
-
-        div {
-            div { $"Here is the count {count}" }
-            button {
-                onclick (fun _ -> setCount (count + 2))
-                "Increase by 2"
-            }
+    adaptiview() {
+        article {
+            class' "marki-app"
+            main { html.route router }
+            footer { "Angel D. Munoz 2022" }
         }
     }
