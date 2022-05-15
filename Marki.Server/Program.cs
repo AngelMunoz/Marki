@@ -42,7 +42,7 @@ app.MapGet("/tags", async () =>
 
 app.MapGet("/blogposts", async (int? page, int? limit, string? title, HttpContext ctx) =>
     {
-        var (reqPage, reqLimit, tags) = (page ?? 1, limit ?? 10, new HashSet<string>());
+        var (reqPage, reqLimit, reqTitle, tags) = (page ?? 1, limit ?? 10, title ?? "", new HashSet<string>());
         if (ctx.Request.Query.TryGetValue("tags", out var values))
         {
             foreach (var tag in values)
@@ -53,11 +53,11 @@ app.MapGet("/blogposts", async (int? page, int? limit, string? title, HttpContex
 
         var (isTagsEmpty, filter) = (tags.Count <= 0, Builders<BlogPost>.Filter.Empty);
 
-        var textFilter = Builders<BlogPost>.Filter.Text(title,
+        var textFilter = Builders<BlogPost>.Filter.Text(reqTitle,
             new TextSearchOptions { CaseSensitive = false, DiacriticSensitive = false });
         var tagsFilter = Builders<BlogPost>.Filter.All("Tags", tags);
 
-        filter = (string.IsNullOrWhiteSpace(title), isTagsEmpty) switch
+        filter = (string.IsNullOrWhiteSpace(reqTitle), isTagsEmpty) switch
         {
             (true, false) => tagsFilter,
             (false, true) => textFilter,
