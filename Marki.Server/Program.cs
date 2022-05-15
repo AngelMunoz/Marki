@@ -1,9 +1,6 @@
 using Marki.Core;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Cors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,45 +36,43 @@ app.MapGet("/tags", async () =>
         new() { { "$unwind", "$Tags" } }
     };
     var tags = await posts.Aggregate(pipeline).ToListAsync();
-    var allTags = tags.Select(doc => doc["Tags"].AsString);
-    return new HashSet<string>(allTags);
+    return tags.Select(doc => doc["Tags"].AsString).ToHashSet();
+    ;
 });
 
-app.MapGet("/blogposts", async (int? page, int? limit, string? title, IEnumerable<string>? tags) =>
+app.MapGet("/blogposts", async (int? page, int? limit, string? title, HttpContext ctx) =>
     {
-        var _page = page ?? 1;
-        var _limit = limit ?? 10;
-        var enumeratedTags = (tags ?? Array.Empty<string>()).ToHashSet();
-        var isTagsEmpty = enumeratedTags.ToArray().Length <= 0;
-
-
-        var filter = Builders<BlogPost>.Filter.Empty;
-        if (!string.IsNullOrWhiteSpace(title) && !isTagsEmpty)
+        var (reqPage, reqLimit, tags) = (page ?? 1, limit ?? 10, new HashSet<string>());
+        if (ctx.Request.Query.TryGetValue("tags", out var values))
         {
-            
-            var textFilter = Builders<BlogPost>.Filter.Text(title, new TextSearchOptions { CaseSensitive = false, DiacriticSensitive = false });
-            var tagsFilter = Builders<BlogPost>.Filter.Where(post => post.Tags.ToHashSet().Overlaps(enumeratedTags));
-            filter = Builders<BlogPost>.Filter.And(textFilter, tagsFilter);
-        }
-        else if (!isTagsEmpty && string.IsNullOrWhiteSpace(title))
-        {
-            filter = Builders<BlogPost>.Filter.Where(post => post.Tags.ToHashSet().Overlaps(enumeratedTags));
-        }
-        else if (isTagsEmpty && !string.IsNullOrWhiteSpace(title))
-        {
-            filter = Builders<BlogPost>.Filter.Text(title, new TextSearchOptions { CaseSensitive = false, DiacriticSensitive = false });
+            foreach (var tag in values)
+            {
+                tags.Add(tag);
+            }
         }
 
+        var (isTagsEmpty, filter) = (tags.Count <= 0, Builders<BlogPost>.Filter.Empty);
+
+        var textFilter = Builders<BlogPost>.Filter.Text(title,
+            new TextSearchOptions { CaseSensitive = false, DiacriticSensitive = false });
+        var tagsFilter = Builders<BlogPost>.Filter.All("Tags", tags);
+
+        filter = (string.IsNullOrWhiteSpace(title), isTagsEmpty) switch
+        {
+            (true, false) => tagsFilter,
+            (false, true) => textFilter,
+            (false, false) => Builders<BlogPost>.Filter.And(textFilter, tagsFilter),
+            (true, true) => filter
+        };
 
         var query =
             posts
                 ?.Find(filter)
-                ?.Skip(_limit * (_page - 1))
-                ?.Limit(_limit);
-        var items = Enumerable.Empty<BlogPost>();
-        var count = 0L;
+                ?.Skip(reqLimit * (reqPage - 1))
+                ?.Limit(reqLimit);
+        var (items, count) = (Enumerable.Empty<BlogPost>(), 0L);
 
-        if (query is null) return Results.Ok(new PaginatedResponse<BlogPost>(items.ToArray(), count));
+        if (query is null) return Results.Ok(new PaginatedResponse<BlogPost>(items, count));
 
         items = await query.ToListAsync();
         count = posts?.CountDocuments(filter) ?? 0;
