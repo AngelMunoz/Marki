@@ -40,6 +40,18 @@ app.MapGet("/tags", async () =>
     ;
 });
 
+app.MapGet("/blogposts/{id}", async (string id) =>
+{
+    if (Guid.TryParse(id, out var guid))
+    {
+        var filter = Builders<BlogPost>.Filter.Eq("_id", guid);
+        var post = await posts.Find(filter).FirstOrDefaultAsync();
+        if (post is null) return Results.NotFound();
+        return Results.Ok(post);
+    }
+    return Results.BadRequest(new { message = "The Id provided is not a valid Id" });
+});
+
 app.MapGet("/blogposts", async (int? page, int? limit, string? title, HttpContext ctx) =>
     {
         var (reqPage, reqLimit, reqTitle, tags) = (page ?? 1, limit ?? 10, title ?? "", new HashSet<string>());

@@ -1,17 +1,36 @@
 ﻿<!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Fun Blazor</title>
     <base href="/" />
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/prismjs@1.28.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
+  <body>
     <div id="app">Loading...</div>
     <script src="_framework/blazor.webassembly.js"></script>
-</body>
+    <script src="https://unpkg.com/prismjs@1.28.0/prism.js"></script>
+    <script src="https://unpkg.com/prismjs@1.28.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/components/icon/icon.js"
+    ></script>
+    <script type="module">
+      import { registerIconLibrary } from "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/utilities/icon-library.js";
 
+      registerIconLibrary("default", {
+        resolver: (name) =>
+          `https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/icons/${name}.svg`,
+      });
+    </script>
+  </body>
 </html>

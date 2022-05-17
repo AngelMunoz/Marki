@@ -18,6 +18,7 @@
     <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="2.13.0" />
     <PackageReference Include="Markdig" Version="0.30.2" />
     <PackageReference Include="MongoDB.Bson" Version="2.15.1" />
+    <PackageReference Include="WebStoating.Markdig.Prism" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

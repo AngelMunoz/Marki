@@ -13,6 +13,10 @@ type Blogs =
         "http://localhost:5000/tags"
             .GetJsonAsync<string seq>()
 
+    static member FindOne(id: string) =
+        $"http://localhost:5000/blogposts/{id.ToString()}"
+            .GetJsonAsync<BlogPost>()
+
     static member Find([<Optional>] ?text: string, [<Optional>] ?tags: string seq) =
         task {
             let text =

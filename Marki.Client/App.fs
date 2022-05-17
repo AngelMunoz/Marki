@@ -13,11 +13,12 @@ open FsToolkit.ErrorHandling
 
 let router =
     [ routeCi "/" (BlogEditor.BlogList())
-      routeCi "/blogs/new" (BlogEditor.NewBlog())
-      routeCif "/blogs/%s/edit" BlogEditor.EditBlog ]
+      routeCif "/read/%s" (fun id -> BlogEditor.EditBlog(id))
+      routeCi "/new" (BlogEditor.NewBlog())
+      routeCif "/edit/%s" (fun id -> BlogEditor.EditBlog(id, true)) ]
 
 let app =
-    adaptiview() {
+    adaptiview () {
         article {
             class' "marki-app"
             main { html.route router }

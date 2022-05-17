@@ -1,0 +1,46 @@
+@page "/read/{PostId}"
+
+@using Marki.Core
+
+<article class="blog-page blog-view">
+
+    @if (Post is not null)
+    {
+        <section class="blog-view">
+            <header class="page-header">
+                <h1>
+                    <a href="/">
+                        <sl-icon name="arrow-left-circle"></sl-icon>
+                    </a>
+                </h1>
+                @Post.Title
+            </header>
+            <article class="blog-text inner-card">
+                @(new MarkupString(Markdown.toHtml(Post.Content)))
+            </article>
+        </section>
+    }
+    else
+    {
+        <span>Blog not found</span>
+    }
+</article>
+
+
+@code {
+    
+    [Parameter]
+    public string? PostId { get; set; }
+    
+    public BlogPost? Post { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (PostId is not null)
+        {
+            Post = await Http.Blogs.FindOne(PostId);
+        }
+    }
+
+}

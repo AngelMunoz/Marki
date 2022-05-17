@@ -1,10 +1,13 @@
-﻿namespace Marki.Client.Components
+﻿//hot-reload
+namespace Marki.Client.Components
 
 open System
 open System.Threading.Tasks
 open FSharp.Data.Adaptive
 open FSharp.Control.Reactive
 open Fun.Blazor
+open Fun.Blazor.HtmlTemplate
+open Fun.Blazor.Router
 open Marki.Core
 open Marki.Core.Http
 open Microsoft.AspNetCore.Components
@@ -14,6 +17,8 @@ module private BlogList =
 
     let private searchTagTpl (item: TagItem) (handleChange: TagItem -> ChangeEventArgs -> unit) =
         li {
+            class' "tag-list-item"
+
             Elts.label {
                 input {
                     onchange (handleChange item)
@@ -28,9 +33,9 @@ module private BlogList =
     let searchBox (tags: TagItem seq, onQuery: string -> unit, onSelectTag: TagItem -> unit) =
 
         aside {
-            class' "blog-search"
+            class' "blog-search inner-card"
 
-            section { h4 { "search by title" } }
+            section { h4 { "Search By Title And Tags" } }
 
             input {
                 placeholder "Search a blog post"
@@ -38,6 +43,8 @@ module private BlogList =
             }
 
             ul {
+                class' "tag-list"
+
                 childContent
                     [ for item in tags do
                           searchTagTpl item (fun tag event ->
@@ -47,13 +54,102 @@ module private BlogList =
             }
         }
 
+    let private blogListItem (post: BlogPost) =
+        let truncateTo =
+            if post.Content.Length < 100 then
+                post.Content.Length
+            else
+                100
+
+        let titleIndex = post.Content.IndexOf("##")
+        let postContent = Markdown.toText (post.Content.Substring(titleIndex, truncateTo))
+
+        li {
+            class' "blog-list-item"
+
+            h4 {
+                a {
+                    href $"/read/{post._id}"
+                    $"{post.Title}"
+                }
+            }
+
+            p { $"{postContent}..." }
+        }
+
     let blogList (paginatedContent: PaginatedResponse<BlogPost>) =
         ul {
-            class' "blog-list"
+            class' "blog-list inner-card"
 
             childContent
                 [ for post in paginatedContent.Items do
-                      li { h3 { post.Title } } ]
+                      blogListItem post ]
+        }
+
+
+module private BlogEdit =
+    let blogView (blog: BlogPost) =
+        section {
+            class' "blog-view"
+
+            header {
+                class' "page-header"
+
+                h1 {
+                    a {
+                        href $"/"
+                        Template.html $"<sl-icon name='arrow-left-circle'></sl-icon>"
+                    }
+
+                    $" {blog.Title}"
+                }
+            }
+
+            article {
+                class' "blog-text inner-card"
+                childContentRaw (Markdown.toHtml (blog.Content))
+            }
+        }
+
+    let blogEditor (blog: BlogPost) =
+        section {
+            class' "editor-area"
+
+            styleElt {
+                ruleset ".editor-area" {
+                    displayFlex
+                    justifyContentSpaceAround
+                }
+
+                ruleset ".form-section" {
+                    displayFlex
+                    flexDirectionColumn
+                    gap "8px"
+                }
+
+                ruleset ".editor-preview" { fontSize "1.5rem" }
+                ruleset ".editor__title" { margin "0" }
+            }
+
+            Elts.form {
+                section {
+                    class' "form-section"
+                    Elts.label { "Markdown Editor" }
+
+                    textarea { rows 10 }
+                }
+            }
+
+            article {
+                class' "editor-preview"
+
+                h4 {
+                    class' "editor__title"
+                    "Preview"
+                }
+
+                section { childContentRaw (Markdown.toHtml "") }
+            }
         }
 
 type BlogEditor =
@@ -125,7 +221,7 @@ type BlogEditor =
                     let! tagValues = hook.UseAVal tags
 
                     article {
-                        class' "blog-page"
+                        class' "blog-page blog-summary"
                         BlogList.searchBox (tagValues, searchText.Publish, updateTags)
 
                         section {
@@ -148,44 +244,31 @@ type BlogEditor =
             "New Blog"
         }
 
-    static member EditBlog(blogId: string) =
+    static member EditBlog(blogId: string, ?edit: bool) =
+        let edit = defaultArg edit false
 
-        section {
-            class' "editor-area"
+        html.inject (
+            "blog-view",
+            fun (hook: IComponentHook) ->
+                let blog = hook.UseStore None
 
-            styleElt {
-                ruleset ".editor-area" {
-                    displayFlex
-                    justifyContentSpaceAround
+                hook.OnInitialized
+                |> Observable.map (fun _ -> Blogs.FindOne blogId)
+                |> Observable.switchTask
+                |> Observable.subscribe (fun post -> post |> Some |> blog.Publish)
+                |> hook.AddDispose
+
+
+                adaptiview () {
+                    let! blogContent = hook.UseAVal blog
+
+                    article {
+                        class' "blog-page blog-view"
+
+                        match blogContent, edit with
+                        | Some blog, true -> BlogEdit.blogEditor blog
+                        | Some blog, false -> BlogEdit.blogView blog
+                        | None, _ -> "Blog not found"
+                    }
                 }
-
-                ruleset ".form-section" {
-                    displayFlex
-                    flexDirectionColumn
-                    gap "8px"
-                }
-
-                ruleset ".editor-preview" { fontSize "1.5rem" }
-                ruleset ".editor__title" { margin "0" }
-            }
-
-            Elts.form {
-                section {
-                    class' "form-section"
-                    Elts.label { "Markdown Editor" }
-
-                    textarea { rows 10 }
-                }
-            }
-
-            article {
-                class' "editor-preview"
-
-                h4 {
-                    class' "editor__title"
-                    "Preview"
-                }
-
-                section { childContentRaw (Markdown.toHtml "") }
-            }
-        }
+        )
