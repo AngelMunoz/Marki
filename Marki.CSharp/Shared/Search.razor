@@ -1,0 +1,101 @@
+﻿@implements IDisposable
+@using Marki.Core
+@using static Marki.Core.Http
+@using System.Reactive.Subjects
+@using System.Linq
+@using System.Reactive.Linq
+
+<aside class="blog-search inner-card">
+    <section>
+        <h4>Search by Title And Tags</h4>
+    </section>
+    <input type="text" placeholder="Search a blog post" @oninput="@OnTextQuery">
+    <ul>
+        @foreach (var tag in Tags ?? Enumerable.Empty<(bool, string)>())
+        {
+            <li class="tag-list-item">
+                <label for="">
+                    <input type="checkbox" checked="@tag.Item1" @onchange="@(e => OnTagChange(e, tag.Item2))">
+                    @tag.Item2
+                </label>
+            </li>
+        }
+    </ul>
+</aside>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<(bool, string)>? Tags { get; set; } = Enumerable.Empty<(bool, string)>();
+
+    [Parameter]
+    public Action<PaginatedResponse<BlogPost>>? OnBlogSearched { private get; set; }
+
+    public void Dispose()
+    {
+        Destroy.OnNext(null);
+        Destroy.OnCompleted();
+        Destroy.Dispose();
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        RegisterObservables();
+    }
+
+    protected void OnTextQuery(ChangeEventArgs args)
+    {
+        OnInput.OnNext(args.Value as string ?? string.Empty);
+    }
+
+    protected void OnTagChange(ChangeEventArgs args, string tag)
+    {
+        var value = args.Value is not null && (bool)args.Value;
+        var tags = Tags.Select(item => tag.Equals(item.Item2) ? (value, tag) : (item.Item1, item.Item2)).ToArray();
+        Tags = tags.ToList();
+        SelectedTags = tags.Where(item => item.Item1).Select(item => item.Item2);
+        OnTagsQuery.OnNext(SelectedTags);
+    }
+
+    private IEnumerable<string> SelectedTags { get; set; } = Enumerable.Empty<string>();
+
+    private string? SearchText { get; set; }
+
+    private Subject<string> OnInput { get; } = new();
+
+    private Subject<IEnumerable<string>> OnTagsQuery { get; } = new();
+
+    private Subject<string?> Destroy { get; } = new();
+
+
+    private void RegisterObservables()
+    {
+        OnInput
+            .AsObservable<string>()
+            .TakeUntil(Destroy)
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .DistinctUntilChanged()
+            .Select(async query => (query, await Blogs.Find(query)))
+            .Switch()
+            .Subscribe(response =>
+            {
+                SearchText = response.Item1;
+                OnBlogSearched?.Invoke(response.Item2);
+            });
+
+        OnTagsQuery
+            .AsObservable()
+            .TakeUntil(Destroy)
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .DistinctUntilChanged()
+            .Select(async tags =>
+            {
+                var t = tags.ToArray();
+                return (t, await Blogs.Find(SearchText, t));
+            })
+            .Switch()
+            .Subscribe(response => { OnBlogSearched?.Invoke(response.Item2); });
+    }
+
+}

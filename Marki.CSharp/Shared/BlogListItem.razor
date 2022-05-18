@@ -1,0 +1,24 @@
+﻿@using Marki.Core
+<li>
+    @if (Post is null)
+    {
+        <span>No Post Available</span>
+    }
+    else
+    {
+        <h4>
+            <NavLink href='@($"{BaseHref}{Post._id}")'>@Post.Title</NavLink>
+        </h4>
+        <p>@(new MarkupString(Markdown.getSummary(Post)))</p>
+    }
+</li>
+
+@code {
+
+    [Parameter]
+    public string? BaseHref { get; set; } = "/read/";
+
+    [Parameter]
+    public BlogPost? Post { get; set; }
+
+}
