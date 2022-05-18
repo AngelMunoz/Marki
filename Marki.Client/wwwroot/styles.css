@@ -1,84 +1,103 @@
 ﻿:root {
-  --accent: #6e5544;
-  --secondary: #5e4d3b;
+    --accent: #6e5544;
+    --secondary: #5e4d3b;
 }
 
 html,
 body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  color: var(--accent);
-  accent-color: var(--accent);
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    color: var(--accent);
+    accent-color: var(--accent);
 }
 
 a {
-  color: var(--accent);
-  text-decoration: underline;
+    color: var(--accent);
+    text-decoration: underline;
 }
 
-a:visited {
-  color: var(--secondary);
-}
+    a:visited {
+        color: var(--secondary);
+    }
 
 .marki-app {
-  height: 100vh;
-  overflow-y: hidden;
+    height: 100vh;
+    overflow-y: hidden;
 }
 
 .blog-page.blog-summary {
-  display: grid;
-  overflow-y: auto;
-  gap: 1em;
-  grid-template-areas: "search posts";
-  grid-template-columns: 20% 1fr;
-  padding: 1em;
+    display: grid;
+    overflow-y: auto;
+    gap: 1em;
+    grid-template-areas: "search posts";
+    grid-template-columns: 20% 1fr;
+    padding: 1em;
 }
+
 .blog-page.blog-view {
-  height: 84vh;
-  margin: 1em;
-  padding: 1em;
-  contain: content;
-  overflow-y: auto;
+    height: 84vh;
+    margin: 1em;
+    padding: 1em;
+    contain: content;
+    overflow-y: auto;
 }
 
 .blog-page .page-header {
-  display: flex;
-  justify-content: center;
-  font-size: 1.5rem;
-  position: sticky;
-  top: 1em;
+    display: flex;
+    justify-content: center;
+    font-size: 1.5rem;
+    position: sticky;
+    top: 1em;
 }
 
 .page-header h1 {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .blog-search {
-  grid-area: search;
-  margin-right: auto;
-  flex: 0 1;
-  padding: 0.5em;
+    grid-area: search;
+    margin-right: auto;
+    flex: 0 1;
+    padding: 0.5em;
 }
 
 .blog-content {
-  grid-area: posts;
-  flex: 1 0;
+    grid-area: posts;
+    flex: 1 0;
 }
 
 .blog-list {
-  height: 82vh;
-  overflow-y: auto;
-  list-style-type: disclosure-closed;
+    height: 82vh;
+    overflow-y: auto;
+    list-style-type: disclosure-closed;
 }
 
 .blog-view .blog-text {
-  padding: 1em;
+    padding: 1em;
 }
 
 .inner-card {
-  border-radius: 22px;
-  background: #e0d8cd;
-  box-shadow: 11px 11px 41px #a8a29a, -11px -11px 41px #ffffff;
+    border-radius: 22px;
+    background: #e0d8cd;
+    box-shadow: 11px 11px 41px #a8a29a, -11px -11px 41px #ffffff;
 }
+
+.editor-area {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+    .editor-area .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .editor-area .editor-preview {
+        font-size: 1.5rem;
+    }
+
+    .editor-area .editor__title {
+        margin: 0;
+    }
