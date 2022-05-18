@@ -1,7 +1,9 @@
 ﻿namespace Marki.Core
 
+open System
 open Markdig
 open Markdig.Prism
+open Marki.Core
 
 [<RequireQualifiedAccess>]
 module Markdown =
@@ -21,3 +23,11 @@ module Markdown =
 
     let toText text =
         Markdown.ToPlainText(text, pipeline.Value)
+
+    let getSummary (post: BlogPost) =
+        let truncateTo =
+            if post.Content.Length < 100 then
+                post.Content.Length
+            else 100
+        
+        post.Content.Substring(0, truncateTo) |> toHtml 
