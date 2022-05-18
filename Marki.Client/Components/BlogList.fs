@@ -16,11 +16,6 @@ module BlogList =
 
         let titleIndex (post: BlogPost) = post.Content.IndexOf("##")
 
-        let postSummary (post: BlogPost) =
-            let titleIndex = titleIndex post
-            let truncateTo = truncateTo post
-            Markdown.toText (post.Content.Substring(titleIndex, truncateTo))
-
     let BlogList (paginatedContent: PaginatedResponse<BlogPost>) =
         ul {
             class' "blog-list inner-card"
@@ -37,6 +32,6 @@ module BlogList =
                               }
                           }
 
-                          p { $"%s{postSummary post}..." }
+                          p { childContentRaw (Markdown.getSummary post) }
                       } ]
         }
